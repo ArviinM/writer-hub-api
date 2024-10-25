@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 interface ErrorResponse {
     success: boolean;
@@ -6,7 +6,7 @@ interface ErrorResponse {
     error?: any;
 }
 
-const errorHandler = (err: Error, req: Request, res: Response) => {
+const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err.stack);
 
     const response: ErrorResponse = {

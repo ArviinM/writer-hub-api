@@ -208,4 +208,57 @@ router.patch('/:id/publish', verifyToken, authRole('Editor'), async (req: Reques
     }
 });
 
+// Get article by ID
+router.get('/:id', (req: Request, res: Response) => {
+    try {
+        const articleId = parseInt(req.params.id);
+
+        db.get('SELECT * FROM Article WHERE id = ?', [articleId], (err, row: Article) => {
+            if (err) {
+                console.error('Error fetching article:', err.message);
+                return res.status(500).json({ success: false, error: 'Failed to fetch article' });
+            }
+
+            if (!row) {
+                return res.status(404).json({ success: false, error: 'Article not found' });
+            }
+
+            const response: BaseResponse<Article> = {
+                success: true,
+                data: row,
+            };
+
+            res.json(response);
+        });
+    } catch (error) {
+        console.error('Error fetching article:', error);
+        res.status(500).json({ success: false, error: 'Failed to fetch article' });
+    }
+});
+
+// Delete an article (Editor only)
+router.delete('/:id', verifyToken, authRole('Editor'), (req: Request, res: Response) => {
+    try {
+        const articleId = parseInt(req.params.id);
+
+        const deleteArticle = db.prepare('DELETE FROM Article WHERE id = ?');
+        deleteArticle.run(articleId, function (this: RunResult, err: Error) {
+            if (err) {
+                console.error('Error deleting article:', err.message);
+                return res.status(500).json({ success: false, error: 'Failed to delete article' });
+            }
+
+            if (this.changes === 0) {
+                return res.status(404).json({ success: false, error: 'Article not found' });
+            }
+
+            res.json({ success: true, message: 'Article deleted successfully' });
+        });
+        deleteArticle.finalize();
+    } catch (error) {
+        console.error('Error deleting article:', error);
+        res.status(500).json({ success: false, error: 'Failed to delete article' });
+    }
+});
+
 export default router;
