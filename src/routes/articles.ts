@@ -67,21 +67,32 @@ router.post('/', verifyToken, authRole('Writer'), async (req: Request, res: Resp
 });
 
 // Get all articles
-router.get('/', (req: Request, res: Response) => {
+router.get('/', async (req: Request, res: Response) => {
     try {
-        db.all('SELECT * FROM Article', (err, rows: Article[]) => {
-            if (err) {
-                console.error('Error fetching articles:', err.message);
-                return res.status(500).json({ success: false, error: 'Failed to fetch articles' });
-            }
+        db.all(
+            `
+              SELECT 
+                Article.*, 
+                User.firstname || ' ' || User.lastname AS writerName,
+                Editor.firstname || ' ' || Editor.lastname AS editorName
+            FROM Article
+            LEFT JOIN User ON Article.writerId = User.id
+            LEFT JOIN User AS Editor ON Article.editorId = Editor.id
+        `,
+            (err, rows) => {
+                if (err) {
+                    console.error('Error fetching articles:', err.message);
+                    return res.status(500).json({ success: false, error: 'Failed to fetch articles' });
+                }
 
-            const response: BaseResponse<Article[]> = {
-                success: true,
-                data: rows,
-            };
+                const response: BaseResponse<any[]> = {
+                    success: true,
+                    data: rows,
+                };
 
-            res.json(response);
-        });
+                res.json(response);
+            },
+        );
     } catch (error) {
         console.error('Error fetching articles:', error);
         res.status(500).json({ success: false, error: 'Failed to fetch articles' });
