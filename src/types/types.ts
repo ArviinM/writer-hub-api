@@ -19,7 +19,7 @@ export interface User {
 
 export interface Article {
     id?: number;
-    image: string;
+    image: string | File;
     title: string;
     link: string;
     date: string;
