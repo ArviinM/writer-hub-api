@@ -127,7 +127,7 @@ router.put('/:id', verifyToken, upload.single('image'), async (req: Request, res
         const image = req.file;
 
         // Basic validation (add more as needed)
-        if (!image || !title || !link || !date || !content || !companyId) {
+        if (!title || !link || !date || !content || !companyId) {
             return res.status(400).json({ success: false, error: 'All fields are required' });
         }
 
