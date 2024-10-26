@@ -9,7 +9,7 @@ import articlesRouter from './routes/articles';
 import errorHandler from './middleware/errorHandler';
 
 const app: Application = express();
-const port = 3001;
+const port = 3000;
 
 db.on('connection', () => {
     console.log('someone connected!');
