@@ -20,6 +20,7 @@ This is the backend API for the Writer Hub application. It provides endpoints fo
 ### Users
 
 -   `POST /users`: Create a new user (Editor role only).
+-   `GET /users/:id`: Create a user information (Editor role only).
 -   `GET /users`: Get all users (Editor role only).
 -   `PUT /users/:id`: Update an existing user (Editor role only).
 
