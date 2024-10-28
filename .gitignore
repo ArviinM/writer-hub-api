@@ -2,5 +2,4 @@
 /dist
 .env
 .vercel
-/uploads
 writerhub.db

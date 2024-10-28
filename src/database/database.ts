@@ -52,7 +52,6 @@ const db = new sqlite3.Database('writerhub.db', (err) => {
                 if (err) {
                     console.error('Error checking for mock users:', err.message);
                 } else if (row.count === 0) {
-                    // Insert mock users only if the User table is empty
                     const insertEditor = db.prepare(
                         'INSERT INTO User (firstname, lastname, email, password, type, status) VALUES (?, ?, ?, ?, ?, ?)',
                     );
@@ -68,7 +67,61 @@ const db = new sqlite3.Database('writerhub.db', (err) => {
                     console.log('Mock users added.');
                 }
             });
-        }); // End of db.serialize
+
+            db.get('SELECT COUNT(*) AS count FROM Company', (err, row: any) => {
+                if (err) {
+                    console.error('Error checking for mock companies:', err.message);
+                } else if (row.count === 0) {
+                    const insertCompany = db.prepare('INSERT INTO Company (logo, name, status) VALUES (?, ?, ?)');
+                    insertCompany.run(
+                        'https://upload.wikimedia.org/wikipedia/en/thumb/8/84/Jollibee_2011_logo.svg/800px-Jollibee_2011_logo.svg.png',
+                        'Jolibee',
+                        'Active',
+                    );
+                    insertCompany.run(
+                        'https://upload.wikimedia.org/wikipedia/commons/0/05/McDonald%27s_square_2020.svg',
+                        'McDonalds',
+                        'Active',
+                    );
+                    insertCompany.finalize();
+
+                    console.log('Mock companies added.');
+                }
+            });
+
+            db.get('SELECT COUNT(*) AS count FROM Article', (err, row: any) => {
+                if (err) {
+                    console.error('Error checking for mock articles:', err.message);
+                } else if (row.count === 0) {
+                    const insertArticle = db.prepare(
+                        'INSERT INTO Article (image, title, link, date, content, status, writerId, companyId) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+                    );
+                    insertArticle.run(
+                        'uploads/jolibee.jpg',
+                        'Jollibee: A Filipino Favorite',
+                        'https://www.example.com/jollibee-article',
+                        '2024-10-28',
+                        '<h1>Jollibee: A Taste of Home</h1><p>Jollibee is a beloved fast-food chain in the Philippines, known for its delicious Chickenjoy fried chicken, Jolly Spaghetti, and Yumburgers.</p><h2>A Unique Flavor</h2><p>What sets Jollibee apart is its unique Filipino-inspired flavors, catering to the local palate.</p>',
+                        'Published',
+                        1,
+                        1,
+                    );
+                    insertArticle.run(
+                        'uploads/mcdonalds.jpeg',
+                        "McDonald's: A Global Icon",
+                        'https://www.example.com/mcdonalds-article',
+                        '2024-10-28',
+                        "<h1>McDonald's: A Worldwide Phenomenon</h1><p>McDonald's is a global fast-food giant, famous for its Big Macs, Quarter Pounders, and French Fries.</p><h2>Consistent Quality</h2><p>McDonald's is known for its consistent quality and familiar menu items, no matter where you are in the world.</p>",
+                        'Published',
+                        1,
+                        2,
+                    );
+                    insertArticle.finalize();
+
+                    console.log('Mock articles added.');
+                }
+            });
+        });
     }
 });
 
